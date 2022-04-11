@@ -16,6 +16,7 @@ class CreateTypeContratsTable extends Migration
         Schema::create('type_contrats', function (Blueprint $table) {
             $table->id();
             $table->string("label");
+            $table->string("slug");
             $table->timestamps();
         });
     }

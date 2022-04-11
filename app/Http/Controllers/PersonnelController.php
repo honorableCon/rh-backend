@@ -4,14 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Contrat;
 use App\Models\Personnel;
+use App\Models\Filiere;
+use App\Models\Fonction;
+use App\Models\Statut;
+use App\Models\TypeContrat;
 use Illuminate\Http\Request;
 use App\Models\PersonnelFonction;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StorePersonnelRequest;
 
-class PersonnelController extends Controller
-{
+class PersonnelController extends Controller{
+
+    public function personnels(){
+        $data = [
+           "filiere" => Filiere::all(),
+           "fonction" => Fonction::all(),
+           "typeContrat" => TypeContrat::all(),
+           "statut" => Statut::all(),
+        ];
+        
+        return $data;
+    }
+
+
+
+
     /**
      * Display a listing of the resource.
      *
@@ -19,7 +37,9 @@ class PersonnelController extends Controller
      */
     public function index()
     {
-        return Personnel::all();
+        $personnels = Personnel::all();
+        $filiere = \App\Models\Filiere::all();
+        return ['personnels' => $personnels, 'filieres' => $filiere];
     }
 
     /**

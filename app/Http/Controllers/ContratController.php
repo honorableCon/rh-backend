@@ -2,11 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use DateTime;
+use Carbon\Carbon;
 use App\Models\Contrat;
+use App\Models\TypeContrat;
+use Illuminate\Http\Request;
 
 class ContratController extends Controller
 {
+    public function getInterimaireEffectifsForYear($slug, $year){
+        $typecontrat = TypeContrat::where('slug', $slug)->first();
+
+        $contrats = Contrat::where('type_contrat_id', $typecontrat->id)
+            ->whereYear('debut', $year)
+            ->get()
+            ->groupBy(function($contrat) { 
+                return Carbon::parse($contrat->debut)->format('M');
+            });
+        
+        foreach ($contrats as $key => $contrat) {
+            $contrats[$key] = $contrat->count();
+        }
+
+        return response()->json($contrats);
+    }
+
+    public function getInterimaireEffectifsForYearAndMonth($year, $monthNumber){
+        $monthName = DateTime::createFromFormat('!m', $monthNumber)->format('F');
+        $contrats = Contrat::whereYear('debut', $year)
+            ->where('type_contrat_id', 4)
+            ->whereMonth('debut', $monthNumber);
+        $data = [
+            $monthName => $contrats->whereMonth('debut', $monthNumber)->get()->count(),
+        ];
+
+        return response()->json($data);
+    }
+
+    public function getPermanentEffectifsForYear($year){
+        $contrats = Contrat::whereYear('debut', $year)->get();
+
+        $cdd = $contrats->where('type_contrat_id', 1)->count();
+        $cdi = $contrats->where('type_contrat_id', 2)->count();
+        $stage = $contrats->where('type_contrat_id', 3)->count();
+
+        $data = [
+            "year" => $year,
+            "CDD" => $cdd,
+            "CDI" => $cdi,
+            "Stage" => $stage,
+            "Total" => $cdd + $cdi + $stage,
+        ];
+
+        return response()->json($data);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -58,7 +107,7 @@ class ContratController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($contrat)
     {
         return Contrat::destroy($contrat);
     }
