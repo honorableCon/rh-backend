@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Statut;
 use Illuminate\Http\Request;
 
 class StatutController extends Controller
@@ -13,7 +14,7 @@ class StatutController extends Controller
      */
     public function index()
     {
-        return Nom::all();
+        return Statut::all();
     }
 
     /**
@@ -24,8 +25,8 @@ class StatutController extends Controller
      */
     public function store(Request $request)
     {
-        $nom = Nom::find($nom->id);
-        return  $nom->update($request->all());
+        $statut = Statut::find($request->id);
+        return  $statut->update($request->all());
     }
 
     /**

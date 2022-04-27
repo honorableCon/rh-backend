@@ -3,17 +3,8 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Services\EffectifService;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -21,12 +12,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/allcontrats', [PersonnelController::class, 'personnels']);
 Route::get('/permanents/{year}', [ContratController::class, 'getPermanentEffectifsForYear']);
-Route::get('/interimaires/{slug}/{year}', 
-    [ContratController::class, 'getInterimaireEffectifsForYear']
+Route::get('/effectifs/{slug}/{year}', 
+    [EffectifService::class, 'getInterimaireEffectifsForYear']
 );
-Route::get('/interimaires/{year}/{month}', 
-    [ContratController::class, 'getInterimaireEffectifsForYearAndMonth']
-);
+// Route::get('/interimaires/{year}/{month}', 
+//     [EffectifService::class, 'getInterimaireEffectifsForYearAndMonth']
+// );
+
+Route::get('/effectifs/{year}', [EffectifService::class, 'getEffectifTotalForYear']);
+Route::get('/repartitions/{typecontrat}/{year}', [EffectifService::class, 'getRepartitionStageBySizeForYear']);
+Route::get('/repartitions/effectifs/{type}/{year}', [EffectifService::class, 'getRepartitionEffectifByForYearAndType']);
+
 Route::resource('contrats', ContratController::class);
 Route::resource('personnels', PersonnelController::class);
 Route::resource('users', UserController::class);
